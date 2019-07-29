@@ -1,0 +1,5 @@
+{
+  "id": "iL+zMeP8",
+  "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[7,\"button\",true],[11,\"id\",\"ember10\",null],[11,\"class\",\"btn o__primary ember-view\",null],[11,\"role\",\"button\",null],[11,\"type\",\"button\",null],[9],[0,\"  \"],[7,\"div\",true],[11,\"class\",\"layout__media\",null],[9],[0,\"\\n    \"],[7,\"div\",true],[11,\"class\",\"layout__media__ext\",null],[9],[0,\"\\n        \"],[7,\"span\",true],[9],[2,\"\"],[0,\" Save\"],[10],[0,\"\\n    \"],[10],[0,\"\\n\"],[2,\"\"],[0,\"  \"],[10],[0,\"\\n\"],[10],[0,\"\\n\"]],\"hasEval\":false}",
+  "meta": {}
+}
