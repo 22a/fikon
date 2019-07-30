@@ -1,3 +1,6 @@
+// try rendering this in an iframe in the figma plugin
+//
+//
 // domain knowledge baked in - here we reference some Pulse playground internals
 // this script will only work when executed inside the `/render` iframe
 let elem = document.querySelector('.render-play').firstElementChild.firstElementChild
