@@ -16,12 +16,21 @@ const absolutelyPositionNode = (node, boundingClientRect) => {
   node.y = boundingClientRect.y;
 };
 
+const makeFrameBackgroundTransparent = (frame) => {
+  frame.backgrounds = [
+    {
+      type: "SOLID",
+      color: { r: 0, g: 0, b: 0 },
+      opacity: 0
+    }
+  ];
+};
+
 const run = async () => {
   await figma.loadFontAsync({ family: "Roboto", style: "Regular" });
 
   // the sole artifact of this process
-  const frame = figma.createFrame();
-  resizeFigmaNodeToFitDomNode(frame, ast.boundingClientRect);
+  let root;
 
   const crawlingWriter = (node, parent) => {
     // TODO: create correct node types, not just frames
@@ -30,10 +39,12 @@ const run = async () => {
     frame.name = node.tagName;
     absolutelyPositionNode(frame, node.boundingClientRect);
     resizeFigmaNodeToFitDomNode(frame, node.boundingClientRect);
+
     // TODO: conditionally and correctly pull other important styles from computedStyle
     // let br = Number(node.computedStyle.borderRadius.match(/\d+/g))
-    let bg = node.computedStyle.backgroundColor.match(/\d+/g);
 
+
+    let bg = node.computedStyle.backgroundColor.match(/\d+/g);
     if (bg) {
       const [r, g, b] = bg.map(Number).map(n => n / 256);
       const a = !r && !g && !b ? 0 : 1;
@@ -46,20 +57,24 @@ const run = async () => {
       ];
     }
 
-    console.log(node)
+    // TODO: find a better heuristic for when to create the text node
     if (node.tagName === "SPAN" && node.innerText) {
       const textNode = figma.createText();
       textNode.characters = node.innerText;
       frame.appendChild(textNode);
     }
 
-    parent.appendChild(frame);
+    // TODO: consider nesting layers fully
+    if (!root) {
+      parent.appendChild(frame);
+      root = frame;
+    } else {
+      root.appendChild(frame);
+    }
     node.children.forEach(child => crawlingWriter(child, frame));
   };
 
-  crawlingWriter(ast, frame);
-
-  figma.currentPage.appendChild(frame);
+  crawlingWriter(ast, figma.currentPage);
 
   // Make sure to close the plugin when you're done. Otherwise the plugin will
   // keep running, which shows the cancel button at the bottom of the screen.

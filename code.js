@@ -45,15 +45,22 @@ var absolutelyPositionNode = function (node, boundingClientRect) {
     node.x = boundingClientRect.x;
     node.y = boundingClientRect.y;
 };
+var makeFrameBackgroundTransparent = function (frame) {
+    frame.backgrounds = [
+        {
+            type: "SOLID",
+            color: { r: 0, g: 0, b: 0 },
+            opacity: 0
+        }
+    ];
+};
 var run = function () { return __awaiter(_this, void 0, void 0, function () {
-    var frame, crawlingWriter;
+    var root, crawlingWriter;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0: return [4 /*yield*/, figma.loadFontAsync({ family: "Roboto", style: "Regular" })];
             case 1:
                 _a.sent();
-                frame = figma.createFrame();
-                resizeFigmaNodeToFitDomNode(frame, ast.boundingClientRect);
                 crawlingWriter = function (node, parent) {
                     // TODO: create correct node types, not just frames
                     var frame = figma.createFrame();
@@ -74,17 +81,23 @@ var run = function () { return __awaiter(_this, void 0, void 0, function () {
                             }
                         ];
                     }
-                    console.log(node);
+                    // TODO: find a better heuristic for when to create the text node
                     if (node.tagName === "SPAN" && node.innerText) {
                         var textNode = figma.createText();
                         textNode.characters = node.innerText;
                         frame.appendChild(textNode);
                     }
-                    parent.appendChild(frame);
+                    // TODO: consider nesting layers fully
+                    if (!root) {
+                        parent.appendChild(frame);
+                        root = frame;
+                    }
+                    else {
+                        root.appendChild(frame);
+                    }
                     node.children.forEach(function (child) { return crawlingWriter(child, frame); });
                 };
-                crawlingWriter(ast, frame);
-                figma.currentPage.appendChild(frame);
+                crawlingWriter(ast, figma.currentPage);
                 // Make sure to close the plugin when you're done. Otherwise the plugin will
                 // keep running, which shows the cancel button at the bottom of the screen.
                 figma.closePlugin();
