@@ -25,11 +25,11 @@ const run = async () => {
 
   const crawlingWriter = (node, parent) => {
     // TODO: create correct node types, not just frames
-    const rect = figma.createFrame();
+    const frame = figma.createFrame();
 
-    rect.name = node.tagName;
-    absolutelyPositionNode(rect, node.boundingClientRect);
-    resizeFigmaNodeToFitDomNode(rect, node.boundingClientRect);
+    frame.name = node.tagName;
+    absolutelyPositionNode(frame, node.boundingClientRect);
+    resizeFigmaNodeToFitDomNode(frame, node.boundingClientRect);
     // TODO: conditionally and correctly pull other important styles from computedStyle
     // let br = Number(node.computedStyle.borderRadius.match(/\d+/g))
     let bg = node.computedStyle.backgroundColor.match(/\d+/g);
@@ -37,7 +37,7 @@ const run = async () => {
     if (bg) {
       const [r, g, b] = bg.map(Number).map(n => n / 256);
       const a = !r && !g && !b ? 0 : 1;
-      rect.backgrounds = [
+      frame.backgrounds = [
         {
           type: "SOLID",
           color: { r, g, b },
@@ -50,11 +50,11 @@ const run = async () => {
     if (node.tagName === "SPAN" && node.innerText) {
       const textNode = figma.createText();
       textNode.characters = node.innerText;
-      rect.appendChild(textNode);
+      frame.appendChild(textNode);
     }
 
-    parent.appendChild(rect);
-    node.children.forEach(child => crawlingWriter(child, rect));
+    parent.appendChild(frame);
+    node.children.forEach(child => crawlingWriter(child, frame));
   };
 
   crawlingWriter(ast, frame);

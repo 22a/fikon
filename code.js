@@ -56,17 +56,17 @@ var run = function () { return __awaiter(_this, void 0, void 0, function () {
                 resizeFigmaNodeToFitDomNode(frame, ast.boundingClientRect);
                 crawlingWriter = function (node, parent) {
                     // TODO: create correct node types, not just frames
-                    var rect = figma.createFrame();
-                    rect.name = node.tagName;
-                    absolutelyPositionNode(rect, node.boundingClientRect);
-                    resizeFigmaNodeToFitDomNode(rect, node.boundingClientRect);
+                    var frame = figma.createFrame();
+                    frame.name = node.tagName;
+                    absolutelyPositionNode(frame, node.boundingClientRect);
+                    resizeFigmaNodeToFitDomNode(frame, node.boundingClientRect);
                     // TODO: conditionally and correctly pull other important styles from computedStyle
                     // let br = Number(node.computedStyle.borderRadius.match(/\d+/g))
                     var bg = node.computedStyle.backgroundColor.match(/\d+/g);
                     if (bg) {
                         var _a = bg.map(Number).map(function (n) { return n / 256; }), r = _a[0], g = _a[1], b = _a[2];
                         var a = !r && !g && !b ? 0 : 1;
-                        rect.backgrounds = [
+                        frame.backgrounds = [
                             {
                                 type: "SOLID",
                                 color: { r: r, g: g, b: b },
@@ -78,10 +78,10 @@ var run = function () { return __awaiter(_this, void 0, void 0, function () {
                     if (node.tagName === "SPAN" && node.innerText) {
                         var textNode = figma.createText();
                         textNode.characters = node.innerText;
-                        rect.appendChild(textNode);
+                        frame.appendChild(textNode);
                     }
-                    parent.appendChild(rect);
-                    node.children.forEach(function (child) { return crawlingWriter(child, rect); });
+                    parent.appendChild(frame);
+                    node.children.forEach(function (child) { return crawlingWriter(child, frame); });
                 };
                 crawlingWriter(ast, frame);
                 figma.currentPage.appendChild(frame);
